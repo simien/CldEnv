@@ -1,0 +1,74 @@
+{
+    email admin@yourdomain.com
+    debug
+}
+
+# Main Domain: Portainer + n8n
+yourdomain.com {
+    # 2. n8n (Automation) - Promoted to Root
+    handle {
+        reverse_proxy n8n:5678 {
+            flush_interval -1
+        }
+    }
+}
+
+# n8n Subdomain (Removed/Commented as DNS failed)
+# n8n.yourdomain.com {
+#    reverse_proxy n8n:5678 {
+#        flush_interval -1
+#    }
+# }
+
+# Logs (Portainer) - Consolidating Portainer here
+logs.yourdomain.com {
+    reverse_proxy portainer:9000
+}
+
+
+# 5. Chat (Open WebUI)
+ai.yourdomain.com {
+    reverse_proxy open-webui:8080 {
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-For {remote}
+    }
+}
+
+# 6. Git (Gitea)
+git.yourdomain.com {
+     reverse_proxy gitea:3000
+     tls admin@yourdomain.com
+}
+
+# Status (Uptime Kuma)
+status.yourdomain.com {
+    reverse_proxy uptime-kuma:3001
+}
+
+# 9. Files (File Browser)
+files.yourdomain.com {
+    reverse_proxy filebrowser:80
+}
+
+# Monitor (Beszel Hub)
+monitor.yourdomain.com {
+     reverse_proxy beszel-hub:8090
+}
+
+# Watch (ChangeDetection.io)
+watch.yourdomain.com {
+    reverse_proxy changedetection:5000
+}
+
+# Home (Homarr Dashboard)
+home.yourdomain.com {
+    reverse_proxy homarr:7575
+}
+
+# Tools (IT-Tools)
+tools.yourdomain.com {
+    reverse_proxy it-tools:80
+    basicauth {
+        admin $2a$14$oM6Si4xSq58Ge6DEGy9TbOxNQaLdlWhTGFnpwXRJdvBVIRxXftN9y
+    }
+}

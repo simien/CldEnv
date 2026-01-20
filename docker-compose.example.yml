@@ -1,0 +1,301 @@
+version: "3.8"
+
+services:
+  # 1. Caddy (Reverse Proxy & SSL)
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - caddy_net
+
+  # 2. n8n (Workflow Automation)
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
+    restart: always
+    environment:
+      - N8N_HOST=yourdomain.com
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://yourdomain.com/
+      - N8N_EDITOR_BASE_URL=https://yourdomain.com/
+      - N8N_SECURE_COOKIE=true
+      - N8N_BLOCK_FS_READ_WRITE_ACCESS_ON_NODES=false
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
+      - N8N_RUNNERS_ENABLED=true
+      - N8N_ALLOW_ENV_ACCESS_IN_NODES=true
+      - NODE_FUNCTION_ALLOW_BUILTIN=*
+      - NODE_FUNCTION_ALLOW_EXTERNAL=*
+      - GENERIC_TIMEZONE=America/New_York
+      - N8N_PROXY_HOPS=1
+      # Paid API Injection (Antigravity v2.0)
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - NAV_GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./docs:/home/node/.n8n-files/docs
+    networks:
+      - caddy_net
+
+  # 3. Portainer CE (Container Management)
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./deploy/portainer_data:/data
+    networks:
+      - caddy_net
+
+  # 4. Gitea (Self-Hosted Git)
+  gitea:
+    image: gitea/gitea:latest
+    container_name: gitea
+    restart: always
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    ports:
+      - "2222:22" # SSH Access
+    volumes:
+      - gitea_data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - caddy_net
+
+  # 5. Uptime Kuma (Monitoring)
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: always
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    volumes:
+      - ./deploy/uptime_kuma_data:/app/data
+    networks:
+      - caddy_net
+
+  # 6. Watchtower (Automatic Updates)
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    environment:
+      - DOCKER_API_VERSION=1.45
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --schedule "0 0 4 * * *" --cleanup
+
+  # 7. Open WebUI (AI Interface)
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: always
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - ENABLE_OLLAMA_API=true
+      - ENABLE_OPENAI_API=true
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
+      - WEBUI_URL=https://ai.yourdomain.com
+      # Antigravity v2.0: DeepSeek Direct + OpenRouter
+      - OPENAI_API_BASE_URLS=https://api.deepseek.com;https://openrouter.ai/api/v1
+      - OPENAI_API_KEYS=${DEEPSEEK_API_KEY};${OPENROUTER_API_KEY}
+      - ENABLE_GOOGLE_API=true
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - ENABLE_GEMINI_API=true
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - open_webui_data:/app/backend/data
+    depends_on:
+      - ollama
+      - qdrant
+    networks:
+      - caddy_net
+
+  # 8. Browserless (Headless Ghost)
+  browserless:
+    image: ghcr.io/browserless/chromium:latest
+    container_name: browserless
+    restart: always
+    environment:
+      - TOKEN=${BROWSERLESS_TOKEN}
+    networks:
+      - caddy_net
+
+  # 9. File Browser (Web File Manager)
+  filebrowser:
+    image: filebrowser/filebrowser:v2
+    container_name: filebrowser
+    restart: always
+    environment:
+      - FB_BASEURL=/
+    volumes:
+      - ./docs:/srv
+      - filebrowser_config:/config
+      - filebrowser_db:/database
+    networks:
+      - caddy_net
+
+  # --- Antigravity v2.0 Extensions ---
+
+  # 10. Ollama (Embedding Server)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: always
+    # Auto-pull lightweight embedding model
+    entrypoint: /bin/sh
+    command: "-c 'ollama serve & sleep 5 && ollama pull nomic-embed-text'"
+    volumes:
+      - ollama:/root/.ollama
+    networks:
+      - caddy_net
+
+  # 11. Qdrant (Vector Database)
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    restart: always
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    ports:
+      - "6333:6333"
+    networks:
+      - caddy_net
+
+  # 12. Beszel Agent (Metrics Source)
+  beszel-agent:
+    image: henrygd/beszel-agent:latest
+    container_name: beszel-agent
+    restart: always
+    network_mode: host
+    environment:
+      - PORT=45876
+      - KEY=${BESZEL_KEY}
+      - TOKEN=${BESZEL_TOKEN}
+      - HUB_URL=https://monitor.yourdomain.com
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./beszel_agent_data:/var/lib/beszel-agent
+
+  # 13. Beszel Hub (Metrics Dashboard)
+  beszel-hub:
+    image: henrygd/beszel:latest
+    container_name: beszel-hub
+    restart: always
+    ports:
+      - "8090:8090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - beszel_data:/app/pb_data
+    networks:
+      - caddy_net
+
+  # 14. ChangeDetection.io (Web Watcher)
+  changedetection:
+    image: ghcr.io/dgtlmoon/changedetection.io
+    container_name: changedetection
+    restart: always
+    environment:
+      - PORT=5000
+      - PLAYWRIGHT_DRIVER_URL=ws://browserless:3000
+      - BASE_URL=https://watch.yourdomain.com
+    volumes:
+      - changedetection_data:/datastore
+    networks:
+      - caddy_net
+
+  # 15. Homarr (Dashboard)
+  homarr:
+    image: ghcr.io/ajnart/homarr:latest
+    container_name: homarr
+    restart: always
+    volumes:
+      - ./homarr_configs:/app/data/configs
+      - ./homarr_icons:/app/public/icons
+      - homarr_data:/data
+    networks:
+      - caddy_net
+
+  # 16. IT-Tools (Developer Utilities)
+  it-tools:
+    image: corentinth/it-tools:latest
+    container_name: it-tools
+    restart: always
+    networks:
+      - caddy_net
+
+  # 17. NeverIdle (Oracle Cloud Keepalive)
+  neveridle:
+    image: alpine:latest
+    container_name: neveridle
+    restart: always
+    command: sh -c "yes > /dev/null"
+    networks:
+      - caddy_net
+
+networks:
+  caddy_net:
+    driver: bridge
+
+volumes:
+  caddy_data:
+    external: true
+    name: deploy_caddy_data
+  caddy_config:
+    external: true
+    name: deploy_caddy_config
+  gitea_data:
+    external: true
+    name: deploy_gitea_data
+  n8n_data:
+    external: true
+    name: n8n_n8n_data
+  open_webui_data:
+    external: true
+    name: assets_open_webui_data
+  filebrowser_config:
+    external: true
+    name: deploy_filebrowser_config
+  filebrowser_db:
+    external: true
+    name: deploy_filebrowser_db
+  ollama:
+    external: true
+    name: deploy_ollama
+  qdrant_storage:
+    external: true
+    name: deploy_qdrant_storage
+  beszel_data:
+    external: true
+    name: deploy_beszel_data
+  changedetection_data:
+    external: true
+    name: deploy_changedetection_data
+  homarr_data:
+    external: true
+    name: deploy_homarr_data
