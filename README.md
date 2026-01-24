@@ -23,7 +23,7 @@ This repository provides the configuration patterns, scripts, and guides to depl
 This stack is optimized for the **Oracle Cloud Always Free** tier, specifically the ARM64 Ampere instances.
 
 
-### [ recommended Specs ]
+### [ Recommended Specs ]
 *   **Instance**: **VM.Standard.A1.Flex**
 *   **CPU**: 4 OCPUs (ARM64) - surprisingly powerful for AI workloads.
 *   **RAM**: 24 GB - essential for running local embeddings and vector DBs.
@@ -99,7 +99,6 @@ nano Caddyfile
 cp docker-compose.example.yml docker-compose.yml
 nano docker-compose.yml
 ```
-*   Set your secure passwords (API Key, Basic Auth).
 *   Set your secure passwords (API Key, Basic Auth).
 *   Add your **OpenRouter API Key** (and OpenAI/Anthropic if using directly).
 
