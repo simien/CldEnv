@@ -1,0 +1,14 @@
+# Real config generated from the .example templates below — never commit
+docker-compose.yml
+Caddyfile
+
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+
+# macOS
+.DS_Store

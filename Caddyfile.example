@@ -69,6 +69,7 @@ home.yourdomain.com {
 tools.yourdomain.com {
     reverse_proxy it-tools:80
     basicauth {
-        admin $2a$14$oM6Si4xSq58Ge6DEGy9TbOxNQaLdlWhTGFnpwXRJdvBVIRxXftN9y
+        # Generate your own with: caddy hash-password
+        admin <paste-your-own-bcrypt-hash-here>
     }
 }
