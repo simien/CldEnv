@@ -73,7 +73,6 @@ newgrp docker
 # 4. Verify
 docker run hello-world
 ```
-*   A domain name (or DuckDNS subdomain).
 
 ### 2. Setup
 Clone this repository to your server:
@@ -129,20 +128,9 @@ Your stack is now live!
 ---
 
 
-## [ Antigravity Integration ]
-
-This environment is designed to work with **Antigravity**, an agentic AI framework.
-
-*   **Workflows**: The `.agent/workflows` directory contains automation protocols.
-*   **Scripts**: The `scripts/` directory includes helper tools for maintenance.
-    *   `publish_tutorial.sh`: The script used to generate THIS public repo from our private internal development stack!
-
-
 ## [ Documentation ]
 
 *   [**Model Registry**](guides/model_registry.md): How to configure Ollama and OpenRouter.
-*   [**n8n Setup**](guides/n8n_setup.md): Getting started with workflows. (Coming Soon)
-*   [**Open WebUI**](guides/openwebui_setup.md): Connecing your first model. (Coming Soon)
 
 ## License
 MIT
