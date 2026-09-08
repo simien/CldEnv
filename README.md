@@ -12,7 +12,7 @@ This repository provides the configuration patterns, scripts, and guides to depl
 
 *   **Reverse proxy**: [Caddy](https://caddyserver.com) - TLS and routing for every service below.
 *   **Automation**: pick one -- [n8n](https://n8n.io) (visual, node-based workflows; what this repo's example compose ships) or [Windmill](https://www.windmill.dev) (script-first, Python/TypeScript/Bash jobs with built-in scheduling; what the reference deployment behind this tutorial actually runs today). Both are included as separate, clearly-labeled blocks in `docker-compose.example.yml` -- keep the one you want, delete the other.
-*   **AI chat**: [Open WebUI](https://openwebui.com) - a ChatGPT-style chat UI, backed by [Ollama](https://ollama.com) (local inference) and [OpenRouter](guides/model_registry.md) (cloud models), with [Qdrant](https://qdrant.tech) for vector search.
+*   **AI chat**: [Open WebUI](https://openwebui.com) - a ChatGPT-style chat UI, backed by [Ollama](https://ollama.com) for free local inference by default, with [free cloud models](guides/model_registry.md) as an optional add-on, and [Qdrant](https://qdrant.tech) for vector search.
 *   **Git hosting**: [Gitea](https://about.gitea.com) - a self-hosted git server.
 *   **Container management**: [Portainer](https://www.portainer.io) - a web UI for Docker.
 *   **Monitoring**: [Uptime Kuma](https://github.com/louislam/uptime-kuma) (service uptime) and [Beszel](https://github.com/henrygd/beszel) (resource metrics).
@@ -119,7 +119,7 @@ nano Caddyfile
 cp .env.example .env
 nano .env
 ```
-*   Fill in at least `WEBUI_SECRET_KEY` and one cloud model key (`OPENROUTER_API_KEY` covers most models). See the comments in `.env.example` for what each variable is for and which ones are optional.
+*   Fill in `WEBUI_SECRET_KEY` (required). Local models via Ollama need no key at all; if you want cloud models too, `GEMINI_API_KEY` is the free option (see [Model Registry](guides/model_registry.md) for why). See the comments in `.env.example` for every variable and which ones are optional.
 *   Docker Compose loads `.env` automatically from this directory -- no extra flag or step needed.
 
 **C. Services (Docker)**

@@ -166,7 +166,8 @@ services:
       - ENABLE_OPENAI_API=true
       - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
       - WEBUI_URL=https://ai.yourdomain.com
-      # Antigravity v2.0: DeepSeek Direct + OpenRouter
+      # Direct DeepSeek API + OpenRouter gateway (both optional, both paid --
+      # see guides/model_registry.md; Gemini below is the free cloud option)
       - OPENAI_API_BASE_URLS=https://api.deepseek.com;https://openrouter.ai/api/v1
       - OPENAI_API_KEYS=${DEEPSEEK_API_KEY};${OPENROUTER_API_KEY}
       - ENABLE_GOOGLE_API=true

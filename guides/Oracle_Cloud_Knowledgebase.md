@@ -85,17 +85,17 @@ All services run as Docker containers defined in `docker-compose.yml`.
 
 ## [ AI & Model Strategy ]
 
-Heavy inference runs in the cloud; embeddings and vector storage stay local.
+This stack is built around Oracle's free tier, so the model strategy follows the same rule: free by default, paid only if chosen. See `guides/model_registry.md` for the full reasoning; summary below.
 
-### 4.1 Cloud Inference
-* **Primary**: **OpenRouter**.
-  * **Model**: `anthropic/claude-3.5-sonnet`.
-  * **Fallback**: `deepseek/deepseek-chat` (direct API).
-* **Key management**: centralized in `.env` and injected via `docker-compose.yml`.
-
-### 4.2 Local Context
+### 4.1 Local Inference (default, always free)
 * **Embeddings**: **Ollama** running `nomic-embed-text` (CPU optimized).
+* **Chat**: **Ollama** running `llama3.2` (or `qwen2.5:14b` for better quality at the cost of speed on CPU-only inference).
 * **Vector store**: **Qdrant** (Rust-based, high performance).
+
+### 4.2 Cloud Inference (optional, still free)
+* **Recommended**: **Google Gemini** -- a genuinely free tier (rate-limited, not credit-limited) covering current-generation models. No billing setup required.
+* **Optional gateway**: **OpenRouter** -- reaches many providers through one key, but its free-tier model list is small and rotates; almost everything else on it is paid, prepaid-credit based. Treat it as the upgrade path to a specific premium model, not the default.
+* **Key management**: centralized in `.env` and injected via `docker-compose.yml`.
 
 ---
 

@@ -12,19 +12,23 @@
 
 ## Connecting Models
 
-### Cloud Models (DeepSeek / OpenRouter)
-We configure these via environment variables in `docker-compose.yml` for security and ease of management.
+This stack defaults to free options -- see [Model Registry](model_registry.md) for the full reasoning.
 
-```yaml
-open-webui:
-  environment:
-    - OPENAI_API_BASE_URLS=https://api.deepseek.com;https://openrouter.ai/api/v1
-    - OPENAI_API_KEYS=${DEEPSEEK_API_KEY};${OPENROUTER_API_KEY}
-```
+### Local Models (Ollama) -- default, always free
+Open WebUI automatically detects Ollama running on the same host, configured via:
+`OLLAMA_BASE_URL=http://ollama:11434`. No API key, no setup beyond pulling a model (see Model Registry).
 
-### Local Models (Ollama)
-Open WebUI automatically detects Ollama running on the same host if configured with:
-`OLLAMA_BASE_URL=http://ollama:11434`
+### Cloud Models (optional)
+All configured via environment variables in `docker-compose.yml` -- no in-app setup needed once `.env` is filled in.
+
+*   **Gemini** (recommended free option): `ENABLE_GEMINI_API=true` + `GEMINI_API_KEY`.
+*   **DeepSeek / OpenRouter** (optional, paid):
+    ```yaml
+    open-webui:
+      environment:
+        - OPENAI_API_BASE_URLS=https://api.deepseek.com;https://openrouter.ai/api/v1
+        - OPENAI_API_KEYS=${DEEPSEEK_API_KEY};${OPENROUTER_API_KEY}
+    ```
 
 ## Retrieval Augmented Generation (RAG)
 1.  Go to **Workspace > Knowledge**.
