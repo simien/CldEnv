@@ -69,8 +69,8 @@ watch.yourdomain.com {
 # Tools (IT-Tools)
 tools.yourdomain.com {
     reverse_proxy it-tools:80
-    basicauth {
-        # Generate your own with: caddy hash-password
+    basic_auth {
+        # Generate your own with: docker exec caddy caddy hash-password
         admin <paste-your-own-bcrypt-hash-here>
     }
 }

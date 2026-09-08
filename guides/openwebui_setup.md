@@ -6,7 +6,7 @@
 ## Configuration
 
 ### Admin Account
-1.  Go to `https://chat.yourdomain.com`.
+1.  Go to `https://ai.yourdomain.com`.
 2.  The first account created becomes the **Admin**.
 3.  Go to **Admin Panel > Settings** to configure global defaults.
 

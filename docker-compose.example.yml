@@ -301,46 +301,22 @@ networks:
   caddy_net:
     driver: bridge
 
+# Plain Compose-managed volumes -- `docker compose up -d` creates all of
+# these automatically on first run. (If you're mirroring this stack from
+# an existing deployment with its own pre-existing volumes, add
+# `external: true` + `name:` back in per-volume instead.)
 volumes:
   caddy_data:
-    external: true
-    name: deploy_caddy_data
   caddy_config:
-    external: true
-    name: deploy_caddy_config
   gitea_data:
-    external: true
-    name: deploy_gitea_data
   n8n_data:
-    external: true
-    name: n8n_n8n_data
   windmill_data:
-    external: true
-    name: deploy_windmill_data
   windmill_lsp_data:
-    external: true
-    name: deploy_windmill_lsp_data
   windmill_db_data:
-    external: true
-    name: deploy_windmill_db_data
   open_webui_data:
-    external: true
-    name: assets_open_webui_data
   filebrowser_config:
-    external: true
-    name: deploy_filebrowser_config
   filebrowser_db:
-    external: true
-    name: deploy_filebrowser_db
   ollama:
-    external: true
-    name: deploy_ollama
   qdrant_storage:
-    external: true
-    name: deploy_qdrant_storage
   beszel_data:
-    external: true
-    name: deploy_beszel_data
   changedetection_data:
-    external: true
-    name: deploy_changedetection_data

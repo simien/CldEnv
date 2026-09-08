@@ -39,12 +39,26 @@ This stack is optimized for the **Oracle Cloud Always Free** tier, specifically 
 ### Other VPS Options
 While optimized for Oracle ARM, this stack runs perfectly on any x86/ARM VPS (DigitalOcean, Hetzner, AWS) with Docker installed.
 
-### Domains & Networking (DuckDNS)
-You don't need a paid domain. This stack is configured to work with **DuckDNS** or any dynamic DNS provider.
+### Domains & Networking
 
-1.  Get a free subdomain from `duckdns.org` (e.g., `my-ai-stack.duckdns.org`).
-2.  Use the wildcard feature: Caddy will automatically route subdomains like `n8n.my-ai-stack.duckdns.org` or `ai.my-ai-stack.duckdns.org` if you configure your DNS records or use Caddy's internal routing capabilities.
-3.  The included `Caddyfile.example` shows how to set this up easily.
+Each service in `Caddyfile.example` gets its own subdomain (`ai.yourdomain.com`, `git.yourdomain.com`, etc.). Either path below gets you there -- pick whichever matches what you already have.
+
+**Option A: You own a domain (recommended if you have one)**
+
+Most registrars and DNS providers support wildcard records, which cover every subdomain in one shot:
+
+1.  In your domain's DNS settings, add a single **A record**: host `*`, value your server's public IP (e.g., `*.yourdomain.com -> 203.0.113.10`).
+2.  That's it -- `ai.yourdomain.com`, `git.yourdomain.com`, and every other subdomain in `Caddyfile.example` now resolve automatically, present or future, with no further DNS changes.
+3.  If your provider doesn't support wildcards, add one A record per subdomain instead (same list as DuckDNS's Option B, step 2 below).
+
+**Option B: Free subdomain via DuckDNS**
+
+DuckDNS's free tier doesn't support wildcard DNS, so this needs one entry per subdomain instead of a single wildcard record:
+
+1.  Get a free domain from `duckdns.org` (e.g., `my-ai-stack.duckdns.org`), pointed at your server's IP.
+2.  In DuckDNS's dashboard, add one entry per subdomain you're using (`ai.my-ai-stack`, `git.my-ai-stack`, `logs.my-ai-stack`, ...), each pointed at the same IP. DuckDNS allows multiple free subdomains on one account.
+
+Either way, the included `Caddyfile.example` shows the routing for every service once DNS resolves -- Caddy requests and renews TLS certificates automatically, the same way, regardless of which option you used.
 
 ---
 
@@ -55,6 +69,7 @@ You don't need a paid domain. This stack is configured to work with **DuckDNS** 
 *   A VPS (Oracle Cloud ARM64 or generic).
 *   **Docker & Docker Compose**.
 *   A domain name (or DuckDNS subdomain).
+*   **On Oracle Cloud specifically**: ports 80 and 443 also need opening in the instance's own **Security List / Network Security Group** (Networking > Virtual Cloud Networks in the OCI console) -- this is a separate firewall from the instance's own `ufw`, and traffic gets silently dropped at this layer if it's not opened here too, regardless of how `ufw` is configured.
 
 
 #### [ Essential Setup: Installing Docker ]
@@ -88,7 +103,7 @@ cd CldEnv
 ```
 
 ### 3. Configuration
-We provide example configurations that need to be customized.
+We provide example configurations that need to be customized. `yourdomain.com` appears in both files below -- replace every instance of it in both, not just one.
 
 **A. Networking (Caddy)**
 ```bash
@@ -97,17 +112,25 @@ nano Caddyfile
 ```
 *   Replace `yourdomain.com` with your actual domain/subdomain.
 *   Update the email address for Let's Encrypt notifications.
+*   Fix up the basic-auth line on the `tools.` route (and any others you add one to): generate a real hash after Caddy is running, with `docker exec caddy caddy hash-password`, and paste it in.
 
-**B. Services (Docker)**
+**B. Secrets (.env)**
+```bash
+cp .env.example .env
+nano .env
+```
+*   Fill in at least `WEBUI_SECRET_KEY` and one cloud model key (`OPENROUTER_API_KEY` covers most models). See the comments in `.env.example` for what each variable is for and which ones are optional.
+*   Docker Compose loads `.env` automatically from this directory -- no extra flag or step needed.
+
+**C. Services (Docker)**
 ```bash
 cp docker-compose.example.yml docker-compose.yml
 nano docker-compose.yml
 ```
-*   Set your secure passwords (API Key, Basic Auth).
-*   Add your **OpenRouter API Key** (and OpenAI/Anthropic if using directly).
-*   Pick your automation engine: delete the `n8n` block or the `windmill_server`/`windmill_lsp`/`windmill_db` blocks (see Architecture above), plus their matching Caddy route. If keeping Windmill, also set `WINDMILL_DB_PASSWORD`.
+*   Replace `yourdomain.com` here too (see the note above).
+*   Pick your automation engine: delete the `n8n` block or the `windmill_server`/`windmill_lsp`/`windmill_db` blocks (see Architecture above), plus their matching Caddy route.
 
-**C. Local AI (Ollama)**
+**D. Local AI (Ollama)**
 To enable local RAG and chat, pull the essential models:
 ```bash
 # Embeddings (Required for RAG)
@@ -130,7 +153,7 @@ docker compose up -d
 The services are now running:
 *   **n8n**: `https://yourdomain.com` (or configured subdomain) -- if you kept n8n
 *   **Windmill**: `https://windmill.yourdomain.com` -- if you kept Windmill instead
-*   **Open WebUI**: `https://chat.yourdomain.com`
+*   **Open WebUI**: `https://ai.yourdomain.com`
 
 ---
 
@@ -138,6 +161,8 @@ The services are now running:
 ## [ Documentation ]
 
 *   [**Model Registry**](guides/model_registry.md): How to configure Ollama and OpenRouter.
+*   [**Open WebUI Setup**](guides/openwebui_setup.md): First-login admin setup and connecting models.
+*   [**Oracle Cloud Knowledgebase**](guides/Oracle_Cloud_Knowledgebase.md): Full service reference, routing table, AI strategy, and troubleshooting.
 
 ## License
 MIT
