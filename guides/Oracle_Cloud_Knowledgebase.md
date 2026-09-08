@@ -12,7 +12,7 @@ This environment is a self-hosted server stack on Oracle Cloud Infrastructure (O
 
 **Design principles:**
 1.  **Data ownership**: All data, code, and logs reside on a user-controlled server.
-2.  **Context**: The system maintains its own context via n8n (workflows) and **Qdrant** (vector memory).
+2.  **Context**: The system maintains its own context via its automation engine (n8n or Windmill workflows) and **Qdrant** (vector memory).
 3.  **Split inference**: heavy inference runs on **OpenRouter** (cloud), keeping local resources free for embeddings and stable local memory.
 4.  **Security**: zero-trust networking with Caddy as the single ingress point.
 
@@ -54,21 +54,30 @@ All services run as Docker containers defined in `docker-compose.yml`.
 * **Service**: **Caddy**.
 * **Role**: Single ingress point. Handles TLS termination (Let's Encrypt), routing, and security headers.
 * **Routing Table**:
-  * `yourdomain.com` -> **n8n** (Automation).
+  * `yourdomain.com` -> **n8n** (Automation, if kept).
+  * `windmill.yourdomain.com` -> **Windmill** (Automation, if kept instead of n8n).
   * `logs.yourdomain.com` -> **Portainer** (Management).
   * `status.yourdomain.com` -> **Uptime Kuma** (Monitoring).
   * `ai.yourdomain.com` -> **Open WebUI** (AI Chat).
 
 ### 3.2 Core Services
-1. **n8n (Automation):**
+
+**Automation (pick one):**
+1. **n8n** -- visual, node-based workflows.
    * **URL**: `https://yourdomain.com`
    * **Role**: Runs workflows that connect AI, data, and webhooks.
    * **Configuration**: Uses `n8n_data` (SQLite).
-2. **Open WebUI (AI Interface):**
+2. **Windmill** -- script-first jobs (Python/TypeScript/Bash) with built-in scheduling. What the reference deployment behind this tutorial actually runs.
+   * **URL**: `https://windmill.yourdomain.com`
+   * **Role**: Same job as n8n above -- scheduled and webhook-triggered automation -- written as scripts instead of visual flows.
+   * **Configuration**: `windmill_server` + `windmill_lsp` (editor language support) + `windmill_db` (Postgres job store).
+
+**Everything else:**
+3. **Open WebUI (AI Interface):**
    * **URL**: `https://ai.yourdomain.com`
    * **Role**: Chat interface and RAG entry point.
    * **Config**: Connects to OpenRouter (Chat) and local Ollama (Embeddings).
-3. **Ollama (Embedding Server):**
+4. **Ollama (Embedding Server):**
    * **Internal Port**: `11434`
    * **Role**: Local embedding generation (`nomic-embed-text`) ONLY. Large models removed to save RAM.
 

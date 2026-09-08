@@ -20,6 +20,12 @@ yourdomain.com {
 #    }
 # }
 
+# Windmill (Automation, alternative to n8n -- only needed if you kept the
+# windmill_server block in docker-compose.example.yml instead of n8n)
+windmill.yourdomain.com {
+    reverse_proxy windmill_server:8000
+}
+
 # Logs (Portainer) - Consolidating Portainer here
 logs.yourdomain.com {
     reverse_proxy portainer:9000

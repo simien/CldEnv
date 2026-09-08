@@ -16,7 +16,9 @@ services:
     networks:
       - caddy_net
 
-  # 2. n8n (Workflow Automation)
+  # 2a. n8n (Workflow Automation -- visual, node-based)
+  # Pick ONE automation engine: this block, or 2b (Windmill) below. Running
+  # both works fine on Oracle's free-tier specs, but most setups want one.
   n8n:
     image: docker.n8n.io/n8nio/n8n@sha256:27b67c39bb1722317e2a6729b31f16282406d3341520793d47431082218d15bb
     container_name: n8n
@@ -36,9 +38,9 @@ services:
       - NODE_FUNCTION_ALLOW_EXTERNAL=*
       - GENERIC_TIMEZONE=America/New_York
       - N8N_PROXY_HOPS=1
-      # Paid API Injection (Antigravity v2.0)
+      # Cloud model API keys, used by n8n's AI nodes
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
-      - NAV_GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
     extra_hosts:
@@ -46,6 +48,55 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
       - ./docs:/home/node/.n8n-files/docs
+    networks:
+      - caddy_net
+
+  # 2b. Windmill (Workflow Automation -- script-first, Python/TypeScript/Bash)
+  # Alternative to n8n above. This is what the reference deployment behind
+  # this tutorial actually runs. Delete this block (and its volumes/network
+  # entries below) if you're using n8n instead.
+  windmill_server:
+    image: ghcr.io/windmill-labs/windmill@sha256:9b82ea234f12109127943f629fc61675be46975fb3a73483230863b003a7a316
+    container_name: windmill_server
+    restart: always
+    environment:
+      - DATABASE_URL=postgres://windmill:${WINDMILL_DB_PASSWORD}@windmill_db/windmill?sslmode=disable
+      - BASE_URL=https://windmill.yourdomain.com
+      - JSON_FMT_NOT_PRETTY=true
+      - JOB_ISOLATION=process
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - KEEP_ENV_VARS=OPENROUTER_API_KEY
+    ports:
+      - "8001:8000"
+    privileged: true
+    depends_on:
+      - windmill_db
+      - windmill_lsp
+    volumes:
+      - windmill_data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - caddy_net
+
+  windmill_lsp:
+    image: ghcr.io/windmill-labs/windmill-lsp@sha256:4e76621383915a938b8d45a9fab4bf4b8769068a73c079fccbbbc23be8da092e
+    container_name: windmill_lsp
+    restart: always
+    volumes:
+      - windmill_lsp_data:/root/.cache
+    networks:
+      - caddy_net
+
+  windmill_db:
+    image: postgres@sha256:727876d274666da0b92a445390ba093c84b8e9f8343e1c53cd4e9a7ab2d85310
+    container_name: windmill_db
+    restart: always
+    environment:
+      - POSTGRES_USER=windmill
+      - POSTGRES_PASSWORD=${WINDMILL_DB_PASSWORD}
+      - POSTGRES_DB=windmill
+    volumes:
+      - windmill_db_data:/var/lib/postgresql/data
     networks:
       - caddy_net
 
@@ -263,6 +314,15 @@ volumes:
   n8n_data:
     external: true
     name: n8n_n8n_data
+  windmill_data:
+    external: true
+    name: deploy_windmill_data
+  windmill_lsp_data:
+    external: true
+    name: deploy_windmill_lsp_data
+  windmill_db_data:
+    external: true
+    name: deploy_windmill_db_data
   open_webui_data:
     external: true
     name: assets_open_webui_data

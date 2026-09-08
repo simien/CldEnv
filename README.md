@@ -11,7 +11,7 @@ This repository provides the configuration patterns, scripts, and guides to depl
 ## [ Architecture ]
 
 *   **Reverse proxy**: [Caddy](https://caddyserver.com) - TLS and routing for every service below.
-*   **Automation**: [n8n](https://n8n.io) - workflow automation.
+*   **Automation**: pick one -- [n8n](https://n8n.io) (visual, node-based workflows; what this repo's example compose ships) or [Windmill](https://www.windmill.dev) (script-first, Python/TypeScript/Bash jobs with built-in scheduling; what the reference deployment behind this tutorial actually runs today). Both are included as separate, clearly-labeled blocks in `docker-compose.example.yml` -- keep the one you want, delete the other.
 *   **AI chat**: [Open WebUI](https://openwebui.com) - a ChatGPT-style chat UI, backed by [Ollama](https://ollama.com) (local inference) and [OpenRouter](guides/model_registry.md) (cloud models), with [Qdrant](https://qdrant.tech) for vector search.
 *   **Git hosting**: [Gitea](https://about.gitea.com) - a self-hosted git server.
 *   **Container management**: [Portainer](https://www.portainer.io) - a web UI for Docker.
@@ -105,6 +105,7 @@ nano docker-compose.yml
 ```
 *   Set your secure passwords (API Key, Basic Auth).
 *   Add your **OpenRouter API Key** (and OpenAI/Anthropic if using directly).
+*   Pick your automation engine: delete the `n8n` block or the `windmill_server`/`windmill_lsp`/`windmill_db` blocks (see Architecture above), plus their matching Caddy route. If keeping Windmill, also set `WINDMILL_DB_PASSWORD`.
 
 **C. Local AI (Ollama)**
 To enable local RAG and chat, pull the essential models:
@@ -127,7 +128,8 @@ docker compose up -d
 ```
 
 The services are now running:
-*   **n8n**: `https://yourdomain.com` (or configured subdomain)
+*   **n8n**: `https://yourdomain.com` (or configured subdomain) -- if you kept n8n
+*   **Windmill**: `https://windmill.yourdomain.com` -- if you kept Windmill instead
 *   **Open WebUI**: `https://chat.yourdomain.com`
 
 ---
