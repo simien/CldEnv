@@ -25,9 +25,10 @@ This environment is a self-hosted server stack on Oracle Cloud Infrastructure (O
 * **Region**: [Your Region]
 * **Instance Type**: **VM.Standard.A1.Flex**.
   * **Architecture**: ARM64 (Ampere Altra).
-  * **OCPUs**: 4.
-  * **RAM**: 24 GB.
+  * **OCPUs**: 4 (confirmed live via `nproc`).
+  * **RAM**: 24 GB (confirmed live via `free -h`).
   * **Storage**: Block Volume (Default 50GB+).
+  * **Note**: this is what the reference deployment behind this tutorial actually runs, provisioned before Oracle reduced the Always Free ARM allocation in 2026 and grandfathered in since. A new signup today should provision **2 OCPUs / 12 GB**, not this -- see [guides/oracle_cloud_setup.md](oracle_cloud_setup.md) for the current limits and why.
 
 ### 2.2 Operating System
 * **OS**: Ubuntu 24.04 LTS (Minimal, ARM64).

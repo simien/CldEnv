@@ -25,13 +25,12 @@ This repository provides the configuration patterns, scripts, and guides to depl
 
 ## [ Infrastructure: Free Tier Specs ]
 
-This stack is optimized for the **Oracle Cloud Always Free** tier, specifically the ARM64 Ampere instances.
-
+This stack is optimized for the **Oracle Cloud Always Free** tier, specifically the ARM64 Ampere instances. Starting from zero -- no Oracle account yet, or unsure how to actually provision the instance -- see the [Oracle Cloud Setup Guide](guides/oracle_cloud_setup.md) first; it covers account creation, current resource limits, and the free-tier capacity issues that trip up most people before they ever get to Docker.
 
 ### [ Recommended Specs ]
 *   **Instance**: **VM.Standard.A1.Flex**
-*   **CPU**: 4 OCPUs (ARM64).
-*   **RAM**: 24 GB - essential for running local embeddings and vector DBs.
+*   **CPU**: 2 OCPUs (ARM64) -- Oracle's Always Free ARM allocation was reduced in 2026; see the setup guide for what changed and why 2 (not 4) is the safe number to provision.
+*   **RAM**: 12 GB.
 *   **Storage**: **200 GB Block Volume**.
     *   *Tip*: Oracle offers 200 GB of free block storage. You can assign it all to this one instance for maximum space (logging, vector DBs, backups) OR split it (e.g., 100GB/100GB) if you plan to run a second free instance. Maximizing it here ensures you never run out of space for Docker images.
 *   **OS**: Ubuntu 22.04 or 24.04 (ARM64).
@@ -66,7 +65,7 @@ Either way, the included `Caddyfile.example` shows the routing for every service
 ## [ Quick Start ]
 
 ### 1. Requirements
-*   A VPS (Oracle Cloud ARM64 or generic).
+*   A running VPS you can SSH into. On Oracle Cloud, that means having already worked through the [Oracle Cloud Setup Guide](guides/oracle_cloud_setup.md) -- account creation, current resource limits, and the capacity issues that block most people before this point aren't covered again here.
 *   **Docker & Docker Compose**.
 *   A domain name (or DuckDNS subdomain).
 *   **On Oracle Cloud specifically**: ports 80 and 443 also need opening in the instance's own **Security List / Network Security Group** (Networking > Virtual Cloud Networks in the OCI console) -- this is a separate firewall from the instance's own `ufw`, and traffic gets silently dropped at this layer if it's not opened here too, regardless of how `ufw` is configured.
@@ -160,6 +159,7 @@ The services are now running:
 
 ## [ Documentation ]
 
+*   [**Oracle Cloud Setup**](guides/oracle_cloud_setup.md): Account creation, current Always Free limits, and getting past "Out of Host Capacity" -- start here if you don't have a running instance yet.
 *   [**Model Registry**](guides/model_registry.md): How to configure Ollama and OpenRouter.
 *   [**Open WebUI Setup**](guides/openwebui_setup.md): First-login admin setup and connecting models.
 *   [**Oracle Cloud Knowledgebase**](guides/Oracle_Cloud_Knowledgebase.md): Full service reference, routing table, AI strategy, and troubleshooting.
