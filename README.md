@@ -41,7 +41,7 @@ While optimized for Oracle ARM, this stack runs perfectly on any x86/ARM VPS (Di
 
 ### Domains & Networking
 
-Each service in `Caddyfile.example` gets its own subdomain (`ai.yourdomain.com`, `git.yourdomain.com`, etc.). Either path below gets you there -- pick whichever matches what you already have.
+Each service in `Caddyfile.example` gets its own subdomain (`ai.yourdomain.com`, `git.yourdomain.com`, etc.). Caddy is what routes each one to the right container once DNS resolves -- it isn't involved in making the DNS itself work. Either path below gets you there; pick whichever matches what you already have.
 
 **Option A: You own a domain (recommended if you have one)**
 
@@ -49,14 +49,14 @@ Most registrars and DNS providers support wildcard records, which cover every su
 
 1.  In your domain's DNS settings, add a single **A record**: host `*`, value your server's public IP (e.g., `*.yourdomain.com -> 203.0.113.10`).
 2.  That's it -- `ai.yourdomain.com`, `git.yourdomain.com`, and every other subdomain in `Caddyfile.example` now resolve automatically, present or future, with no further DNS changes.
-3.  If your provider doesn't support wildcards, add one A record per subdomain instead (same list as DuckDNS's Option B, step 2 below).
+3.  If your provider doesn't support wildcards, add one A record per subdomain instead.
 
 **Option B: Free subdomain via DuckDNS**
 
-DuckDNS's free tier doesn't support wildcard DNS, so this needs one entry per subdomain instead of a single wildcard record:
+DuckDNS behaves like a wildcard once you've registered one name -- it resolves *any* subdomain under that name to the same IP automatically, with nothing extra to configure. Confirmed directly: `made-up-name.sapcloud.duckdns.org` resolves the same as `sapcloud.duckdns.org` itself, no prior registration needed for that specific subdomain.
 
 1.  Get a free domain from `duckdns.org` (e.g., `my-ai-stack.duckdns.org`), pointed at your server's IP.
-2.  In DuckDNS's dashboard, add one entry per subdomain you're using (`ai.my-ai-stack`, `git.my-ai-stack`, `logs.my-ai-stack`, ...), each pointed at the same IP. DuckDNS allows multiple free subdomains on one account.
+2.  That's it -- `ai.my-ai-stack.duckdns.org`, `git.my-ai-stack.duckdns.org`, and every other subdomain in `Caddyfile.example` already resolve to that same IP, present or future, with no further DNS changes. The dashboard's "domains X/5" counter is how many separate *root* names you've registered (useful for running entirely separate projects), not a limit on subdomains under the one you're using here.
 
 Either way, the included `Caddyfile.example` shows the routing for every service once DNS resolves -- Caddy requests and renews TLS certificates automatically, the same way, regardless of which option you used.
 

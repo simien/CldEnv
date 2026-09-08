@@ -1,6 +1,6 @@
 # Model Registry (Tutorial Edition)
 
-This stack is built around Oracle's Always Free tier, so the model recommendations follow the same rule: **free by default, paid only if you choose it.** Nothing here requires a credit card or prepaid balance to get a working setup.
+This stack is built around a free-tier setup, so the model recommendations follow the same rule: **free by default, paid only if you choose it.** Nothing here requires a credit card or prepaid balance to get a working setup.
 
 ---
 

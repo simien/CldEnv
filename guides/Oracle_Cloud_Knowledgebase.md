@@ -85,7 +85,7 @@ All services run as Docker containers defined in `docker-compose.yml`.
 
 ## [ AI & Model Strategy ]
 
-This stack is built around Oracle's free tier, so the model strategy follows the same rule: free by default, paid only if chosen. See `guides/model_registry.md` for the full reasoning; summary below.
+The model strategy follows the same free-by-default rule as the rest of this stack: paid only if chosen. See `guides/model_registry.md` for the full reasoning; summary below.
 
 ### 4.1 Local Inference (default, always free)
 * **Embeddings**: **Ollama** running `nomic-embed-text` (CPU optimized).
