@@ -27,7 +27,7 @@ Instead of managing multiple API keys (OpenAI, Anthropic, Google, etc.), we reco
 | **Qwen 2.5 14B** | `qwen2.5:14b` | Great balance of speed/intelligence for local chat. |
 | **Llama 3.2** | `llama3.2` | Lightweight model for basic tasks. |
 
-### 📥 How to Install
+### How to Install
 Run these commands on your server to download the models:
 
 ```bash

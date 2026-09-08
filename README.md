@@ -1,8 +1,8 @@
 # CldEnv
 
-**Sovereign AI Automation Infrastructure**
+**Self-Hosted Cloud Server Stack**
 
-`CldEnv` is a production-grade, secure, and cost-effective environment for running your own AI agents, automation workflows, and "Sovereign Contextual Stacks". It combines the power of **n8n** (Logic), **Open WebUI** (Interface), and **Ollama** (Local AI) into a unified, privacy-first platform.
+`CldEnv` is a Docker Compose stack for running your own server on a free-tier VPS: automation, AI chat and local inference, git hosting, container/uptime monitoring, a file browser, and a set of developer utilities, all behind one reverse proxy, with your data staying on your own server.
 
 This repository provides the configuration patterns, scripts, and guides to deploy this stack on a free **Oracle Cloud** instance or any standard VPS.
 
@@ -10,22 +10,27 @@ This repository provides the configuration patterns, scripts, and guides to depl
 
 ## [ Architecture ]
 
-*   **Logic**: [n8n](https://n8n.io) (Workflow Automation) - The nervous system of your stack.
-*   **Interface**: [Open WebUI](https://openwebui.com) (ChatGPT-style UI) - The friendly face for your AI models.
-*   **Intelligence**: [Ollama](https://ollama.com) (Local Inference) + [OpenRouter](guides/model_registry.md) (Cloud Brain).
-*   **Security**: [Caddy](https://caddyserver.com) (Reverse Proxy) - Handles auto-SSL and routing.
-*   **Orchestration**: Docker Compose + **Antigravity Kit**.
+*   **Reverse proxy**: [Caddy](https://caddyserver.com) - TLS and routing for every service below.
+*   **Automation**: [n8n](https://n8n.io) - workflow automation.
+*   **AI chat**: [Open WebUI](https://openwebui.com) - a ChatGPT-style chat UI, backed by [Ollama](https://ollama.com) (local inference) and [OpenRouter](guides/model_registry.md) (cloud models), with [Qdrant](https://qdrant.tech) for vector search.
+*   **Git hosting**: [Gitea](https://about.gitea.com) - a self-hosted git server.
+*   **Container management**: [Portainer](https://www.portainer.io) - a web UI for Docker.
+*   **Monitoring**: [Uptime Kuma](https://github.com/louislam/uptime-kuma) (service uptime) and [Beszel](https://github.com/henrygd/beszel) (resource metrics).
+*   **Files**: [File Browser](https://filebrowser.org) - a web file manager.
+*   **Developer utilities**: [IT-Tools](https://it-tools.tech) (everyday dev conversions/generators) and [ChangeDetection.io](https://changedetection.io) (page-change monitoring).
+*   **Housekeeping**: [Watchtower](https://containrrr.dev/watchtower/) (update monitoring) and a keepalive container for free-tier instance reclamation.
+*   **Orchestration**: Docker Compose.
 
 ---
 
-## [ Infrastructure: The "Free Tier" Powerhouse ]
+## [ Infrastructure: Free Tier Specs ]
 
 This stack is optimized for the **Oracle Cloud Always Free** tier, specifically the ARM64 Ampere instances.
 
 
 ### [ Recommended Specs ]
 *   **Instance**: **VM.Standard.A1.Flex**
-*   **CPU**: 4 OCPUs (ARM64) - surprisingly powerful for AI workloads.
+*   **CPU**: 4 OCPUs (ARM64).
 *   **RAM**: 24 GB - essential for running local embeddings and vector DBs.
 *   **Storage**: **200 GB Block Volume**.
     *   *Tip*: Oracle offers 200 GB of free block storage. You can assign it all to this one instance for maximum space (logging, vector DBs, backups) OR split it (e.g., 100GB/100GB) if you plan to run a second free instance. Maximizing it here ensures you never run out of space for Docker images.
@@ -34,7 +39,7 @@ This stack is optimized for the **Oracle Cloud Always Free** tier, specifically 
 ### Other VPS Options
 While optimized for Oracle ARM, this stack runs perfectly on any x86/ARM VPS (DigitalOcean, Hetzner, AWS) with Docker installed.
 
-### 🌐 Domains & Networking (DuckDNS)
+### Domains & Networking (DuckDNS)
 You don't need a paid domain. This stack is configured to work with **DuckDNS** or any dynamic DNS provider.
 
 1.  Get a free subdomain from `duckdns.org` (e.g., `my-ai-stack.duckdns.org`).
@@ -115,13 +120,13 @@ docker exec -it ollama ollama pull llama3.2
 
 
 ### 4. Deploy
-Fire it up!
+Start the stack:
 
 ```bash
 docker compose up -d
 ```
 
-Your stack is now live!
+The services are now running:
 *   **n8n**: `https://yourdomain.com` (or configured subdomain)
 *   **Open WebUI**: `https://chat.yourdomain.com`
 

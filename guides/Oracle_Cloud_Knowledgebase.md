@@ -1,20 +1,20 @@
-# Oracle Cloud Environment: Master Knowledgebase
+# Oracle Cloud Environment: Knowledgebase
 
 **Version**: 2.0 (Public Tutorial Edition)
-**Scope**: Infrastructure, Software Stack, AI Configuration, and Operational Procedures.
-**Purpose**: Serving as the Source of Truth for your Sovereign Contextual Stack.
+**Scope**: Infrastructure, software stack, AI configuration, and operational procedures.
+**Purpose**: Reference documentation for this stack's configuration and behavior.
 
 ---
 
 ## [ Executive Summary ]
 
-This environment is a **Sovereign Contextual Stack** hosted on Oracle Cloud Infrastructure (OCI). It is designed to provide a private, cost-free, production-grade platform for AI automation and coding.
+This environment is a self-hosted server stack on Oracle Cloud Infrastructure (OCI): a free, private platform for automation, AI, and general server tooling.
 
-**Core Philosophy (Antigravity v2.0):**
-1.  **Sovereignty**: All data, code, and logs reside on a user-controlled server.
-2.  **Context**: The system maintains its own context via n8n (workflows) and **Qdrant** (Vector Memory).
-3.  **Cloud Brain, Sovereign Memory**: Shifted heavy inference to **OpenRouter** (Cloud) to free up minimal resources for stable local memory.
-4.  **Security**: Zero-trust networking with Caddy as the single ingress point.
+**Design principles:**
+1.  **Data ownership**: All data, code, and logs reside on a user-controlled server.
+2.  **Context**: The system maintains its own context via n8n (workflows) and **Qdrant** (vector memory).
+3.  **Split inference**: heavy inference runs on **OpenRouter** (cloud), keeping local resources free for embeddings and stable local memory.
+4.  **Security**: zero-trust networking with Caddy as the single ingress point.
 
 ---
 
@@ -52,7 +52,7 @@ All services run as Docker containers defined in `docker-compose.yml`.
 
 ### 3.1 Reverse Proxy & Gateway
 * **Service**: **Caddy**.
-* **Role**: The "Front Door". Handles SSL termination (Let's Encrypt), routing, and security headers.
+* **Role**: Single ingress point. Handles TLS termination (Let's Encrypt), routing, and security headers.
 * **Routing Table**:
   * `yourdomain.com` -> **n8n** (Automation).
   * `logs.yourdomain.com` -> **Portainer** (Management).
@@ -62,7 +62,7 @@ All services run as Docker containers defined in `docker-compose.yml`.
 ### 3.2 Core Services
 1. **n8n (Automation):**
    * **URL**: `https://yourdomain.com`
-   * **Role**: The central "nervous system". Runs workflows that connect AI, data, and webhooks.
+   * **Role**: Runs workflows that connect AI, data, and webhooks.
    * **Configuration**: Uses `n8n_data` (SQLite).
 2. **Open WebUI (AI Interface):**
    * **URL**: `https://ai.yourdomain.com`
@@ -76,17 +76,17 @@ All services run as Docker containers defined in `docker-compose.yml`.
 
 ## [ AI & Model Strategy ]
 
-The system uses a **"Cloud Brain, Sovereign Memory"** strategy.
+Heavy inference runs in the cloud; embeddings and vector storage stay local.
 
-### 4.1 Cloud Inference ("The Brain")
+### 4.1 Cloud Inference
 * **Primary**: **OpenRouter**.
-  * **Logic**: `anthropic/claude-3.5-sonnet`.
-  * **Fallback**: `deepseek/deepseek-chat` (Direct API).
-* **Key Management**: Centralized in `.env` and injected via `docker-compose.yml`.
+  * **Model**: `anthropic/claude-3.5-sonnet`.
+  * **Fallback**: `deepseek/deepseek-chat` (direct API).
+* **Key management**: centralized in `.env` and injected via `docker-compose.yml`.
 
-### 4.2 Local Context ("The Memory")
+### 4.2 Local Context
 * **Embeddings**: **Ollama** running `nomic-embed-text` (CPU optimized).
-* **Vector Store**: **Qdrant** (Rust-based, high performance).
+* **Vector store**: **Qdrant** (Rust-based, high performance).
 
 ---
 
