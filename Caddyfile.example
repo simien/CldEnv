@@ -1,10 +1,10 @@
 {
-    email admin@yourdomain.com
+    email admin@example.com
     debug
 }
 
 # Main Domain: Portainer + n8n
-yourdomain.com {
+example.com {
     # 2. n8n (Automation) - Promoted to Root
     handle {
         reverse_proxy n8n:5678 {
@@ -14,7 +14,7 @@ yourdomain.com {
 }
 
 # n8n Subdomain (Removed/Commented as DNS failed)
-# n8n.yourdomain.com {
+# n8n.example.com {
 #    reverse_proxy n8n:5678 {
 #        flush_interval -1
 #    }
@@ -22,18 +22,18 @@ yourdomain.com {
 
 # Windmill (Automation, alternative to n8n -- only needed if you kept the
 # windmill_server block in docker-compose.example.yml instead of n8n)
-windmill.yourdomain.com {
+windmill.example.com {
     reverse_proxy windmill_server:8000
 }
 
 # Logs (Portainer) - Consolidating Portainer here
-logs.yourdomain.com {
+logs.example.com {
     reverse_proxy portainer:9000
 }
 
 
 # 5. Chat (Open WebUI)
-ai.yourdomain.com {
+ai.example.com {
     reverse_proxy open-webui:8080 {
         header_up X-Forwarded-Proto {scheme}
         header_up X-Forwarded-For {remote}
@@ -41,33 +41,33 @@ ai.yourdomain.com {
 }
 
 # 6. Git (Gitea)
-git.yourdomain.com {
+git.example.com {
      reverse_proxy gitea:3000
-     tls admin@yourdomain.com
+     tls admin@example.com
 }
 
 # Status (Uptime Kuma)
-status.yourdomain.com {
+status.example.com {
     reverse_proxy uptime-kuma:3001
 }
 
 # 9. Files (File Browser)
-files.yourdomain.com {
+files.example.com {
     reverse_proxy filebrowser:80
 }
 
 # Monitor (Beszel Hub)
-monitor.yourdomain.com {
+monitor.example.com {
      reverse_proxy beszel-hub:8090
 }
 
 # Watch (ChangeDetection.io)
-watch.yourdomain.com {
+watch.example.com {
     reverse_proxy changedetection:5000
 }
 
 # Tools (IT-Tools)
-tools.yourdomain.com {
+tools.example.com {
     reverse_proxy it-tools:80
     basic_auth {
         # Generate your own with: docker exec caddy caddy hash-password

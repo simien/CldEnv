@@ -37,7 +37,7 @@ This environment is a self-hosted server stack on Oracle Cloud Infrastructure (O
 
 ### 2.3 Networking & Security
 * **Public IP**: `x.x.x.x` (Reserved/Static IP recommended).
-* **Domain**: `yourdomain.com` (Managed via DuckDNS/Cloudflare).
+* **Domain**: `example.com` (Managed via DuckDNS/Cloudflare).
 * **Ingress Ports (OCI Firewall & iptables):**
   * **22 (SSH):** Remote specific access.
   * **80 (HTTP):** Open for Let's Encrypt challenges (Auto-redirects to 443).
@@ -55,27 +55,27 @@ All services run as Docker containers defined in `docker-compose.yml`.
 * **Service**: **Caddy**.
 * **Role**: Single ingress point. Handles TLS termination (Let's Encrypt), routing, and security headers.
 * **Routing Table**:
-  * `yourdomain.com` -> **n8n** (Automation, if kept).
-  * `windmill.yourdomain.com` -> **Windmill** (Automation, if kept instead of n8n).
-  * `logs.yourdomain.com` -> **Portainer** (Management).
-  * `status.yourdomain.com` -> **Uptime Kuma** (Monitoring).
-  * `ai.yourdomain.com` -> **Open WebUI** (AI Chat).
+  * `example.com` -> **n8n** (Automation, if kept).
+  * `windmill.example.com` -> **Windmill** (Automation, if kept instead of n8n).
+  * `logs.example.com` -> **Portainer** (Management).
+  * `status.example.com` -> **Uptime Kuma** (Monitoring).
+  * `ai.example.com` -> **Open WebUI** (AI Chat).
 
 ### 3.2 Core Services
 
 **Automation (pick one):**
 1. **n8n** -- visual, node-based workflows.
-   * **URL**: `https://yourdomain.com`
+   * **URL**: `https://example.com`
    * **Role**: Runs workflows that connect AI, data, and webhooks.
    * **Configuration**: Uses `n8n_data` (SQLite).
 2. **Windmill** -- script-first jobs (Python/TypeScript/Bash) with built-in scheduling. What the reference deployment behind this tutorial actually runs.
-   * **URL**: `https://windmill.yourdomain.com`
+   * **URL**: `https://windmill.example.com`
    * **Role**: Same job as n8n above -- scheduled and webhook-triggered automation -- written as scripts instead of visual flows.
    * **Configuration**: `windmill_server` + `windmill_lsp` (editor language support) + `windmill_db` (Postgres job store).
 
 **Everything else:**
 3. **Open WebUI (AI Interface):**
-   * **URL**: `https://ai.yourdomain.com`
+   * **URL**: `https://ai.example.com`
    * **Role**: Chat interface and RAG entry point.
    * **Config**: Connects to OpenRouter (Chat) and local Ollama (Embeddings).
 4. **Ollama (Embedding Server):**

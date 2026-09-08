@@ -24,11 +24,11 @@ services:
     container_name: n8n
     restart: always
     environment:
-      - N8N_HOST=yourdomain.com
+      - N8N_HOST=example.com
       - N8N_PORT=5678
       - N8N_PROTOCOL=https
-      - WEBHOOK_URL=https://yourdomain.com/
-      - N8N_EDITOR_BASE_URL=https://yourdomain.com/
+      - WEBHOOK_URL=https://example.com/
+      - N8N_EDITOR_BASE_URL=https://example.com/
       - N8N_SECURE_COOKIE=true
       - N8N_BLOCK_FS_READ_WRITE_ACCESS_ON_NODES=false
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
@@ -61,7 +61,7 @@ services:
     restart: always
     environment:
       - DATABASE_URL=postgres://windmill:${WINDMILL_DB_PASSWORD}@windmill_db/windmill?sslmode=disable
-      - BASE_URL=https://windmill.yourdomain.com
+      - BASE_URL=https://windmill.example.com
       - JSON_FMT_NOT_PRETTY=true
       - JOB_ISOLATION=process
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
@@ -165,7 +165,7 @@ services:
       - ENABLE_OLLAMA_API=true
       - ENABLE_OPENAI_API=true
       - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
-      - WEBUI_URL=https://ai.yourdomain.com
+      - WEBUI_URL=https://ai.example.com
       # Direct DeepSeek API + OpenRouter gateway (both optional, both paid --
       # see guides/model_registry.md; Gemini below is the free cloud option)
       - OPENAI_API_BASE_URLS=https://api.deepseek.com;https://openrouter.ai/api/v1
@@ -209,8 +209,6 @@ services:
     networks:
       - caddy_net
 
-  # --- Antigravity v2.0 Extensions ---
-
   # 10. Ollama (Embedding Server)
   ollama:
     image: ollama/ollama@sha256:32931b46719f673c05fdbaa81ccb26da18ea4a1c57590a754874ab28ba269eb2
@@ -248,7 +246,7 @@ services:
       - PORT=45876
       - KEY=${BESZEL_KEY}
       - TOKEN=${BESZEL_TOKEN}
-      - HUB_URL=https://monitor.yourdomain.com
+      - HUB_URL=https://monitor.example.com
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./beszel_agent_data:/var/lib/beszel-agent
@@ -275,7 +273,7 @@ services:
     environment:
       - PORT=5000
       - PLAYWRIGHT_DRIVER_URL=ws://browserless:3000
-      - BASE_URL=https://watch.yourdomain.com
+      - BASE_URL=https://watch.example.com
     volumes:
       - changedetection_data:/datastore
     networks:

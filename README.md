@@ -40,19 +40,19 @@ While optimized for Oracle ARM, this stack runs perfectly on any x86/ARM VPS (Di
 
 ### Domains & Networking
 
-Each service in `Caddyfile.example` gets its own subdomain (`ai.yourdomain.com`, `git.yourdomain.com`, etc.). Caddy is what routes each one to the right container once DNS resolves -- it isn't involved in making the DNS itself work. Either path below gets you there; pick whichever matches what you already have.
+Each service in `Caddyfile.example` gets its own subdomain (`ai.example.com`, `git.example.com`, etc.). Caddy is what routes each one to the right container once DNS resolves -- it isn't involved in making the DNS itself work. Either path below gets you there; pick whichever matches what you already have.
 
 **Option A: You own a domain (recommended if you have one)**
 
 Most registrars and DNS providers support wildcard records, which cover every subdomain in one shot:
 
-1.  In your domain's DNS settings, add a single **A record**: host `*`, value your server's public IP (e.g., `*.yourdomain.com -> 203.0.113.10`).
-2.  That's it -- `ai.yourdomain.com`, `git.yourdomain.com`, and every other subdomain in `Caddyfile.example` now resolve automatically, present or future, with no further DNS changes.
+1.  In your domain's DNS settings, add a single **A record**: host `*`, value your server's public IP (e.g., `*.example.com -> 203.0.113.10`).
+2.  That's it -- `ai.example.com`, `git.example.com`, and every other subdomain in `Caddyfile.example` now resolve automatically, present or future, with no further DNS changes.
 3.  If your provider doesn't support wildcards, add one A record per subdomain instead.
 
 **Option B: Free subdomain via DuckDNS**
 
-DuckDNS behaves like a wildcard once you've registered one name -- it resolves *any* subdomain under that name to the same IP automatically, with nothing extra to configure. Confirmed directly: `made-up-name.sapcloud.duckdns.org` resolves the same as `sapcloud.duckdns.org` itself, no prior registration needed for that specific subdomain.
+DuckDNS behaves like a wildcard once you've registered one name -- it resolves *any* subdomain under that name to the same IP automatically, with nothing extra to configure (confirmed directly with `dig` against a live DuckDNS domain: an arbitrary, never-registered subdomain resolved correctly with zero prior setup).
 
 1.  Get a free domain from `duckdns.org` (e.g., `my-ai-stack.duckdns.org`), pointed at your server's IP.
 2.  That's it -- `ai.my-ai-stack.duckdns.org`, `git.my-ai-stack.duckdns.org`, and every other subdomain in `Caddyfile.example` already resolve to that same IP, present or future, with no further DNS changes. The dashboard's "domains X/5" counter is how many separate *root* names you've registered (useful for running entirely separate projects), not a limit on subdomains under the one you're using here.
@@ -102,14 +102,14 @@ cd CldEnv
 ```
 
 ### 3. Configuration
-We provide example configurations that need to be customized. `yourdomain.com` appears in both files below -- replace every instance of it in both, not just one.
+We provide example configurations that need to be customized. `example.com` appears in both files below -- replace every instance of it in both, not just one.
 
 **A. Networking (Caddy)**
 ```bash
 cp Caddyfile.example Caddyfile
 nano Caddyfile
 ```
-*   Replace `yourdomain.com` with your actual domain/subdomain.
+*   Replace `example.com` with your actual domain/subdomain.
 *   Update the email address for Let's Encrypt notifications.
 *   Fix up the basic-auth line on the `tools.` route (and any others you add one to): generate a real hash after Caddy is running, with `docker exec caddy caddy hash-password`, and paste it in.
 
@@ -126,7 +126,7 @@ nano .env
 cp docker-compose.example.yml docker-compose.yml
 nano docker-compose.yml
 ```
-*   Replace `yourdomain.com` here too (see the note above).
+*   Replace `example.com` here too (see the note above).
 *   Pick your automation engine: delete the `n8n` block or the `windmill_server`/`windmill_lsp`/`windmill_db` blocks (see Architecture above), plus their matching Caddy route.
 
 **D. Local AI (Ollama)**
@@ -150,9 +150,9 @@ docker compose up -d
 ```
 
 The services are now running:
-*   **n8n**: `https://yourdomain.com` (or configured subdomain) -- if you kept n8n
-*   **Windmill**: `https://windmill.yourdomain.com` -- if you kept Windmill instead
-*   **Open WebUI**: `https://ai.yourdomain.com`
+*   **n8n**: `https://example.com` (or configured subdomain) -- if you kept n8n
+*   **Windmill**: `https://windmill.example.com` -- if you kept Windmill instead
+*   **Open WebUI**: `https://ai.example.com`
 
 ---
 
