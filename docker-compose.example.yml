@@ -3,7 +3,7 @@ version: "3.8"
 services:
   # 1. Caddy (Reverse Proxy & SSL)
   caddy:
-    image: caddy:latest
+    image: caddy@sha256:df7f1c2fb114453b951de51a98efc010db1655a92c2e86be6706714e2417a78d
     container_name: caddy
     restart: always
     ports:
@@ -18,7 +18,7 @@ services:
 
   # 2. n8n (Workflow Automation)
   n8n:
-    image: docker.n8n.io/n8nio/n8n
+    image: docker.n8n.io/n8nio/n8n@sha256:27b67c39bb1722317e2a6729b31f16282406d3341520793d47431082218d15bb
     container_name: n8n
     restart: always
     environment:
@@ -51,7 +51,7 @@ services:
 
   # 3. Portainer CE (Container Management)
   portainer:
-    image: portainer/portainer-ce:latest
+    image: portainer/portainer-ce@sha256:511f3f06c96fe3b993ebeaafde311c1959cae73a7ef825dba6397d51b450dffa
     container_name: portainer
     restart: unless-stopped
     security_opt:
@@ -65,7 +65,7 @@ services:
 
   # 4. Gitea (Self-Hosted Git)
   gitea:
-    image: gitea/gitea:latest
+    image: gitea/gitea@sha256:87a67ee09d3ae0d1df5fda5dcda3e2a1f9236a45b0a59025d6e00e46adc43bef
     container_name: gitea
     restart: always
     environment:
@@ -82,7 +82,7 @@ services:
 
   # 5. Uptime Kuma (Monitoring)
   uptime-kuma:
-    image: louislam/uptime-kuma:1
+    image: louislam/uptime-kuma@sha256:3e24e96c89efff0e3a4b0698cbdd36c15ad3022371db57166e5588853002ee5c
     container_name: uptime-kuma
     restart: always
     dns:
@@ -95,7 +95,7 @@ services:
 
   # 6. Watchtower (Automatic Updates)
   watchtower:
-    image: containrrr/watchtower
+    image: containrrr/watchtower@sha256:6dd50763bbd632a83cb154d5451700530d1e44200b268a4e9488fefdfcf2b038
     container_name: watchtower
     restart: unless-stopped
     environment:
@@ -106,7 +106,7 @@ services:
 
   # 7. Open WebUI (AI Interface)
   open-webui:
-    image: ghcr.io/open-webui/open-webui:main
+    image: ghcr.io/open-webui/open-webui@sha256:1a6399d237dc392a2313e0ca826020b3fd5d22536357840eb63393d18dc8b924
     container_name: open-webui
     restart: always
     environment:
@@ -135,7 +135,7 @@ services:
 
   # 8. Browserless (Headless Ghost)
   browserless:
-    image: ghcr.io/browserless/chromium:latest
+    image: ghcr.io/browserless/chromium@sha256:5252f0d0bb947acec41c39f4507fab4af15f9f9337267ca1a97fa026197df8e6
     container_name: browserless
     restart: always
     environment:
@@ -145,7 +145,7 @@ services:
 
   # 9. File Browser (Web File Manager)
   filebrowser:
-    image: filebrowser/filebrowser:v2
+    image: filebrowser/filebrowser@sha256:a469ea076d4a1b4b1d86a41d130f2f536cd9da996a2b1fb39c0d7635f9d89b9a
     container_name: filebrowser
     restart: always
     environment:
@@ -161,7 +161,7 @@ services:
 
   # 10. Ollama (Embedding Server)
   ollama:
-    image: ollama/ollama:latest
+    image: ollama/ollama@sha256:32931b46719f673c05fdbaa81ccb26da18ea4a1c57590a754874ab28ba269eb2
     container_name: ollama
     restart: always
     # Auto-pull lightweight embedding model
@@ -174,7 +174,7 @@ services:
 
   # 11. Qdrant (Vector Database)
   qdrant:
-    image: qdrant/qdrant:latest
+    image: qdrant/qdrant@sha256:12364fe851b9f17356fc88189fc06d1b521262e04659ec7345975b00c9246a10
     container_name: qdrant
     restart: always
     volumes:
@@ -188,7 +188,7 @@ services:
 
   # 12. Beszel Agent (Metrics Source)
   beszel-agent:
-    image: henrygd/beszel-agent:latest
+    image: henrygd/beszel-agent@sha256:00c88600e7d120128f623b2deb5257603d464e841fd68f88cc791dcc075f9e46
     container_name: beszel-agent
     restart: always
     network_mode: host
@@ -203,7 +203,7 @@ services:
 
   # 13. Beszel Hub (Metrics Dashboard)
   beszel-hub:
-    image: henrygd/beszel:latest
+    image: henrygd/beszel@sha256:fefb27166f5e1611ebf67f8697ea928a23f44efdb00af922e2ac3b5faa2efd5c
     container_name: beszel-hub
     restart: always
     ports:
@@ -217,7 +217,7 @@ services:
 
   # 14. ChangeDetection.io (Web Watcher)
   changedetection:
-    image: ghcr.io/dgtlmoon/changedetection.io
+    image: ghcr.io/dgtlmoon/changedetection.io@sha256:ecacd9fd0c664a786b77daadbbbf51373519b29178a32df3ddbc5c594bc067ed
     container_name: changedetection
     restart: always
     environment:
@@ -229,21 +229,9 @@ services:
     networks:
       - caddy_net
 
-  # 15. Homarr (Dashboard)
-  homarr:
-    image: ghcr.io/ajnart/homarr:latest
-    container_name: homarr
-    restart: always
-    volumes:
-      - ./homarr_configs:/app/data/configs
-      - ./homarr_icons:/app/public/icons
-      - homarr_data:/data
-    networks:
-      - caddy_net
-
   # 16. IT-Tools (Developer Utilities)
   it-tools:
-    image: corentinth/it-tools:latest
+    image: corentinth/it-tools@sha256:8b8128748339583ca951af03dfe02a9a4d7363f61a216226fc28030731a5a61f
     container_name: it-tools
     restart: always
     networks:
@@ -251,7 +239,7 @@ services:
 
   # 17. NeverIdle (Oracle Cloud Keepalive)
   neveridle:
-    image: alpine:latest
+    image: alpine@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
     container_name: neveridle
     restart: always
     command: sh -c "yes > /dev/null"
@@ -296,6 +284,3 @@ volumes:
   changedetection_data:
     external: true
     name: deploy_changedetection_data
-  homarr_data:
-    external: true
-    name: deploy_homarr_data

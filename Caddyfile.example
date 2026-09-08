@@ -60,11 +60,6 @@ watch.yourdomain.com {
     reverse_proxy changedetection:5000
 }
 
-# Home (Homarr Dashboard)
-home.yourdomain.com {
-    reverse_proxy homarr:7575
-}
-
 # Tools (IT-Tools)
 tools.yourdomain.com {
     reverse_proxy it-tools:80
